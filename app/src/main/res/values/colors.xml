@@ -3,7 +3,6 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-
     <color name="transparent">#00000000</color>
     <color name="main_top_color">#f7614d</color>
     <color name="main_top_tab_color">#fcc9c5</color>
@@ -11,5 +10,10 @@
     <color name="matrix_color">#ffffff</color>
     <color name="white">#ffffff</color>
     <color name="red">#FFFF1826</color>
+    <color name="grey">#C0C0C0</color>
+    <color name="black">#000000</color>
+    <color name="blue">#00BFFF</color>
+    <color name="purple">#FF00FF</color>
+    <color name="green">#00FF00</color>
 
 </resources>
