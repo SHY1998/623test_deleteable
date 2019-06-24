@@ -11,17 +11,16 @@
         android:layout_height="@dimen/top_tab_height"
         android:background="@color/main_top_color" >
 
-        <TextView
-            android:id="@+id/picture_text"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1.0"
-            android:gravity="center"
-            android:text="@string/picture"
-            android:textStyle="bold"
-            android:textColor="@color/main_top_tab_color"
-            android:textSize="@dimen/main_top_tab_text_size" />
-
+        <!--<TextView-->
+            <!--android:id="@+id/picture_text"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="fill_parent"-->
+            <!--android:layout_weight="1.0"-->
+            <!--android:gravity="center"-->
+            <!--android:text="@string/picture"-->
+            <!--android:textStyle="bold"-->
+            <!--android:textColor="@color/main_top_tab_color"-->
+            <!--android:textSize="@dimen/main_top_tab_text_size" />-->
         <TextView
             android:id="@+id/movie_text"
             android:layout_width="fill_parent"
@@ -32,7 +31,6 @@
             android:textStyle="bold"
             android:textColor="@color/main_top_tab_color"
             android:textSize="@dimen/main_top_tab_text_size" />
-
         <TextView
             android:id="@+id/music_text"
             android:layout_width="fill_parent"

@@ -119,6 +119,7 @@ public class PlayActivity extends Activity implements View.OnClickListener {
             Intent intent1=new Intent(this, PlayService.class);
             intent1.putExtra("MSG", AppConstantUtil.PlayerMsg.PLAYING_MSG);
             intent1.putExtra("position", mCurrentPosition);
+            System.out.println("点击另外");
             intent1.setAction("com.example.action.MUSIC_SERVICE");
             startService(intent1);
             isPlaying=true;

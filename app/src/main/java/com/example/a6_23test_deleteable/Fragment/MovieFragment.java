@@ -69,6 +69,7 @@ public class MovieFragment  extends Fragment  {
                 getActivity().stopService(stop_intent);
                 Intent intent =new Intent(MovieFragment.this.getContext(), PlayActivity.class);
                 intent.putExtra("position",position);
+                System.out.println("点击另外");
                 startActivity(intent);
                 Intent intent1=new Intent(CTL_ACTION);
                 intent1.putExtra("position",position);

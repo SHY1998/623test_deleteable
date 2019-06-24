@@ -103,14 +103,14 @@ public class MainActivity extends FragmentActivity {
     private void InitTextView(){
 
         //图片头标
-        pictureTextView = (TextView)findViewById(R.id.picture_text);
+      //  pictureTextView = (TextView)findViewById(R.id.picture_text);
         //电影头标
         movieTextView = (TextView) findViewById(R.id.movie_text);
         //音乐头标
         musicTextView = (TextView)findViewById(R.id.music_text);
 
         //添加点击事件
-        pictureTextView.setOnClickListener(new MyOnClickListener(0));
+        //pictureTextView.setOnClickListener(new MyOnClickListener(0));
         movieTextView.setOnClickListener(new MyOnClickListener(1));
         musicTextView.setOnClickListener(new MyOnClickListener(2));
     }
@@ -131,7 +131,7 @@ public class MainActivity extends FragmentActivity {
 
         //将顶部文字恢复默认值
         resetTextViewTextColor();
-        pictureTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color_2));
+     //   pictureTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color_2));
 
         //设置viewpager页面滑动监听事件
         mViewPager.setOnPageChangeListener(new MyOnPageChangeListener());
@@ -148,14 +148,14 @@ public class MainActivity extends FragmentActivity {
         // 获取分辨率宽度
         int screenW = dm.widthPixels;
 
-        bmpW = (screenW/3);
+        bmpW = (screenW/2);
 
         //设置动画图片宽度
         setBmpW(cursor, bmpW);
         offset = 0;
 
         //动画图片偏移量赋值
-        position_one = (int) (screenW / 3.0);
+        position_one = (int) (screenW / 2.0);
         position_two = position_one * 2;
 
     }
@@ -165,7 +165,7 @@ public class MainActivity extends FragmentActivity {
      */
     private void InitFragment(){
         fragmentArrayList = new ArrayList<Fragment>();
-        fragmentArrayList.add(new PictureFragment());
+       // fragmentArrayList.add(new PictureFragment());
         fragmentArrayList.add(new MovieFragment());
         fragmentArrayList.add(new MusicFragment());
 
@@ -208,11 +208,14 @@ public class MainActivity extends FragmentActivity {
                     if(currIndex == 1){
                         animation = new TranslateAnimation(position_one, 0, 0, 0);
                         resetTextViewTextColor();
-                        pictureTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color_2));
+                        movieTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color_2));
+                        // pictureTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color_2));
                     }else if(currIndex == 2){//从页卡1跳转转到页卡3
                         animation = new TranslateAnimation(position_two, 0, 0, 0);
                         resetTextViewTextColor();
-                        pictureTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color_2));
+                        movieTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color_2));
+
+                    //    pictureTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color_2));
                     }
                     break;
 
@@ -222,27 +225,31 @@ public class MainActivity extends FragmentActivity {
                     if (currIndex == 0) {
                         animation = new TranslateAnimation(offset, position_one, 0, 0);
                         resetTextViewTextColor();
-                        movieTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color_2));
+                        musicTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color_2));
+
+                      //  movieTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color_2));
                     } else if (currIndex == 2) { //从页卡1跳转转到页卡2
                         animation = new TranslateAnimation(position_two, position_one, 0, 0);
                         resetTextViewTextColor();
-                        movieTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color_2));
+                        musicTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color_2));
+
+                   //     movieTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color_2));
                     }
                     break;
 
                 //当前为页卡3
                 case 2:
-                    //从页卡1跳转转到页卡2
-                    if (currIndex == 0) {
-                        animation = new TranslateAnimation(offset, position_two, 0, 0);
-                        resetTextViewTextColor();
-                        musicTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color_2));
-                    } else if (currIndex == 1) {//从页卡1跳转转到页卡2
-                        animation = new TranslateAnimation(position_one, position_two, 0, 0);
-                        resetTextViewTextColor();
-                        musicTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color_2));
-                    }
-                    break;
+//                    //从页卡1跳转转到页卡2
+//                    if (currIndex == 0) {
+//                        animation = new TranslateAnimation(offset, position_two, 0, 0);
+//                        resetTextViewTextColor();
+//                        musicTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color_2));
+//                    } else if (currIndex == 1) {//从页卡1跳转转到页卡2
+//                        animation = new TranslateAnimation(position_one, position_two, 0, 0);
+//                        resetTextViewTextColor();
+//                        musicTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color_2));
+//                    }
+//                    break;
             }
             currIndex = position;
 
@@ -279,7 +286,7 @@ public class MainActivity extends FragmentActivity {
      */
     private void resetTextViewTextColor(){
 
-        pictureTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color));
+      //  pictureTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color));
         movieTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color));
         musicTextView.setTextColor(getResources().getColor(R.color.main_top_tab_color));
     }

@@ -76,7 +76,7 @@ public class OnlinePlayActivity extends Activity implements View.OnClickListener
             Intent intent1=new Intent(this, NetPlayService.class);
             intent1.putExtra("MSG", AppConstantUtil.PlayerMsg.PLAY_MSG);
             System.out.println(id);
-            intent1.putExtra("id",stringId);
+            intent1.putExtra("id",nId);
             startService(intent1);
             System.out.println("启动intent1");
             isPlaying=true;
