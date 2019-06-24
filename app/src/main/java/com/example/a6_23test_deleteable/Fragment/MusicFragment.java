@@ -52,6 +52,7 @@ public class MusicFragment extends Fragment {
     public static JSONObject jo;
     String artist;
     String name;
+    String music_id;
     public static List<Map<String, String>> searchResults = new ArrayList<Map<String, String>>();
     private static int screenWidth;
     private SearchView searchView;
@@ -175,7 +176,7 @@ public class MusicFragment extends Fragment {
                 JSONObject musicId=child.getJSONObject("privilege");
                 artist=artists.getJSONObject(0).getString("name");
                 name=child.getString("name");
-                String music_id=musicId.getString("id");
+                music_id=musicId.getString("id");
                 System.out.println(artist);
                 Map<String, String> item = new HashMap<String, String>();
                 item.put("name",name);
@@ -192,10 +193,6 @@ public class MusicFragment extends Fragment {
         musicList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Intent stop_loc=new Intent();
-//                stop_loc.setClass(MusicFragment.this.getActivity(),PlayService.class);
-//                stop_loc.setAction("com.example.action.MUSIC_SERVICE");
-//                getActivity().stopService(stop_loc);
                 Map<String, String> map = searchResults.get(position-1);
                 String songname,playername;
                 songname=map.get("name");
@@ -207,6 +204,7 @@ public class MusicFragment extends Fragment {
                 Intent start_online=new Intent(MusicFragment.this.getActivity(), OnlinePlayActivity.class);
                 start_online.putExtra("name",songname);
                 start_online.putExtra("artist",playername);
+                start_online.putExtra("music_id",music_id);
                 getActivity().startActivity(start_online);
             }
         });

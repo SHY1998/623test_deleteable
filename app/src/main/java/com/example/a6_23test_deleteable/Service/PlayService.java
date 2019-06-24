@@ -17,13 +17,11 @@ import java.util.List;
 
 public class PlayService extends Service {
     private MediaPlayer mediaPlayer;
-    private MusicUtils musicUtils;
     private List<Music> music;
     private String path;
     private int mCurrentPosition;
     private int currentTime=0;
     private List<Music> list;
-    private MyReceiver myReceiver;
     private int msg;
     private boolean isPlaying;
     private boolean isPause;
@@ -198,6 +196,8 @@ public class PlayService extends Service {
             mediaPlayer.release();
             mediaPlayer = null;
         }
+        super.onDestroy();
+
     }
 
 
