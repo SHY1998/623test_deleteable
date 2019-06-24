@@ -1,5 +1,4 @@
 package com.example.a6_23test_deleteable.Service;
-
 import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -7,16 +6,17 @@ import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-
 import com.example.a6_23test_deleteable.Utils.AppConstantUtil;
 
-import java.io.IOException;
 
-public class NetPlayService extends Service implements MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnCompletionListener,
+public class NetPlayService extends Service implements MediaPlayer.OnBufferingUpdateListener,
+        MediaPlayer.OnCompletionListener,
         MediaPlayer.OnPreparedListener {
     MediaPlayer mediaPlayer;
     private String uri;
-    String id;
+    int id;
+    private boolean isPlaying;
+    private boolean isPause;
     private int msg;
     private int percent;
     private Handler handler = new Handler() {
@@ -78,35 +78,63 @@ public class NetPlayService extends Service implements MediaPlayer.OnBufferingUp
             stopSelf();
             System.out.println("停止运行");
         }
-        id=intent.getStringExtra("id");
-        msg=intent.getIntExtra("MSG",-1);
-        System.out.println("id为："+id);
-        System.out.println(msg);
+        else
+        {
+//            msg=intent.getIntExtra("MSG",0);
+            msg=intent.getIntExtra("MSG",-1);
+            System.out.println("MSG="+msg);
+            id=intent.getIntExtra("id",-1);
+        }
         if (msg== AppConstantUtil.PlayerMsg.PLAY_MSG)
         {
             System.out.println("msg正常");
             play(id);
             System.out.println();
         }
-        return;
+        else if (msg== AppConstantUtil.PlayerMsg.PAUSE_MSG)
+        {
+            pause();
+        }
+        else if(msg== AppConstantUtil.PlayerMsg.CONTINUE_MSG)
+        {
+            resume();
+        }
+        super.onStart(intent,flags);
 
     }
-    private void play(String id)
+    private void play(int id)
     {
         try
         {
             System.out.println("play运行");
             mediaPlayer.reset();
+            System.out.println(id);
             uri="https://v1.itooi.cn/netease/url?id="+id+"&quality=flac";
             mediaPlayer.setDataSource(uri);
-            mediaPlayer.prepare();
-//            mediaPlayer.start();
+            mediaPlayer.prepareAsync();
             mediaPlayer.setOnPreparedListener(this);
             handler.sendEmptyMessage(0);
             handler.sendEmptyMessage(1);
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void pause()
+    {
+        if (mediaPlayer != null && mediaPlayer.isPlaying())
+        {
+            mediaPlayer.pause();
+            isPause=true;
+        }
+    }
+    private void resume()
+    {
+        if(isPause)
+        {
+            mediaPlayer.start();
+            isPause=false;
         }
     }
     @Override
@@ -122,12 +150,8 @@ public class NetPlayService extends Service implements MediaPlayer.OnBufferingUp
     @Override
     public void onPrepared(MediaPlayer mp) {
         mediaPlayer.start();
-        Intent intent = new Intent();
-//        intent.setAction(MUSIC_DURATION);
-//        duration = mediaPlayer.getDuration();
-//        intent.putExtra("duration", duration);
-//        Log.v("duran", duration+"");
-        sendBroadcast(intent);
+//        Intent intent = new Intent();
+//        sendBroadcast(intent);
     }
 
 

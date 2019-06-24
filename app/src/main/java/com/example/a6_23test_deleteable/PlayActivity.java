@@ -68,10 +68,12 @@ public class PlayActivity extends Activity implements View.OnClickListener {
         pause=findViewById(R.id.IB_pause);
         front=findViewById(R.id.IB_front);
         next=findViewById(R.id.IB_next);
+
         music_process=findViewById(R.id.SB_length);
         nameText=findViewById(R.id.TV_songName);
         singerText=findViewById(R.id.TV_singer);
         song=findViewById(R.id.TV_songName);
+
         currentProcess=findViewById(R.id.current_progress);
         finalProgress=findViewById(R.id.final_progress);
         front.setOnClickListener(this);

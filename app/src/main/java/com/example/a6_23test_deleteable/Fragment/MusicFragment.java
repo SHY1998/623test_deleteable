@@ -87,7 +87,7 @@ public class MusicFragment extends Fragment {
                 if(msg.what==0)
                 {
                     musicList.setAdapter(getAdapter());
-                    onLoad();
+
                 } else if (msg.what==1)
                 {
                     Toast.makeText(MusicFragment.this.getActivity(),"完成",Toast.LENGTH_SHORT);
@@ -104,7 +104,9 @@ public class MusicFragment extends Fragment {
             public void onLoadMore() {
                 page++;
                 getSong(searchInfo,page);
-                musicList.smoothScrollToPosition(musicList.getCount()-1);
+//                musicList.smoothScrollToPosition(musicList.getCount() - 1);
+//                System.out.println("========================================"+musicList.getCount());
+//                musicList.scr
             }
         });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -131,7 +133,6 @@ public class MusicFragment extends Fragment {
         if (search.equals(""))
             return;
         Log.d("TAG","connecting");
-        Toast.makeText(MusicFragment.this.getActivity(),"connectURL",Toast.LENGTH_SHORT).show();
         String s=null;
         if (search!=null)
         {
@@ -145,11 +146,14 @@ public class MusicFragment extends Fragment {
         System.out.println(url);
         Log.d(TAG,"url="+url);
         StringRequest stringRequest=new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+
+
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, response);
                 getResponse = response;
                 showList();
+                onLoad();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -171,6 +175,7 @@ public class MusicFragment extends Fragment {
             JSONArray js=new JSONObject(result).getJSONArray("songs");
             for(int i=0;i<js.length();i++)
             {
+                System.out.println(js.length());
                 JSONObject child=js.getJSONObject(i);
                 JSONArray artists=child.getJSONArray("ar");
                 JSONObject musicId=child.getJSONObject("privilege");
@@ -186,7 +191,6 @@ public class MusicFragment extends Fragment {
                 Log.d(TAG, "name = " + name + "---artists:" + artist);
             }
             handler.sendEmptyMessage(0);
-            Toast.makeText(MusicFragment.this.getActivity(),"下载完成",Toast.LENGTH_SHORT);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -269,5 +273,4 @@ public class MusicFragment extends Fragment {
     {
         super.onDestroy();
     }
-
 }
