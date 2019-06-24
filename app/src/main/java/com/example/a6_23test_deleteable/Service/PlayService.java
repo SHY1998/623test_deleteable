@@ -57,11 +57,7 @@ public class PlayService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d("service","service created");
-//        list=new ArrayList<Music>();
-//        list=MusicUtils.getMusicData(this);
-//        IntentFilter intentFilter=new IntentFilter();
-//        intentFilter.addAction(MainActivity.CTL_ACTION);
-//        registerReceiver(myReceiver,intentFilter);
+//
         mediaPlayer=new MediaPlayer();
         music= MusicUtils.getMusicData(PlayService.this);
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {

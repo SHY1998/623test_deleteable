@@ -1,6 +1,7 @@
 package com.example.a6_23test_deleteable.Fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +12,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -24,7 +26,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.a6_23test_deleteable.OnlinePlayActivity;
+import com.example.a6_23test_deleteable.PlayActivity;
 import com.example.a6_23test_deleteable.R;
+import com.example.a6_23test_deleteable.Service.PlayService;
+import com.example.xlistviewapi22.XListView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,15 +44,21 @@ import java.util.List;
 import java.util.Map;
 
 public class MusicFragment extends Fragment {
+    public static final String CTL_ACTION="com.example.action.CTL_ACTION";
     public static final String CLOUD_MUSIC_API="https://v1.itooi.cn/netease/search?";
+    public static final String CLOUD_MUSIC_PLAY="https://v1.itooi.cn/netease/url?";
     private static final String TAG = "MainActivity";
     public static  String getResponse;
     public static JSONObject jo;
+    String artist;
+    String name;
     public static List<Map<String, String>> searchResults = new ArrayList<Map<String, String>>();
     private static int screenWidth;
     private SearchView searchView;
-    ListView musicList;
+    XListView musicList;
+    public static String searchInfo;
     Handler handler;
+    int page=0;
     RequestQueue mQueue = null;
     @Override
     public void onAttach(Activity activity) {
@@ -63,6 +75,8 @@ public class MusicFragment extends Fragment {
         View rootView=inflater.inflate(R.layout.fragment_getmusic,container,false);
         searchView=rootView.findViewById(R.id.searchView);
         musicList=rootView.findViewById(R.id.netmusiclist);
+        musicList.setPullLoadEnable(true);
+        musicList.setPullRefreshEnable(true);
         mQueue= Volley.newRequestQueue(MusicFragment.this.getActivity());
         handler=new Handler()
         {
@@ -72,19 +86,35 @@ public class MusicFragment extends Fragment {
                 if(msg.what==0)
                 {
                     musicList.setAdapter(getAdapter());
+                    onLoad();
                 } else if (msg.what==1)
                 {
                     Toast.makeText(MusicFragment.this.getActivity(),"完成",Toast.LENGTH_SHORT);
                 }
             }
         };
+        musicList.setXListViewListener(new XListView.IXListViewListener() {
+            @Override
+            public void onRefresh() {
+                page++;
+                getSong(searchInfo,page);
+            }
+            @Override
+            public void onLoadMore() {
+                page++;
+                getSong(searchInfo,page);
+                musicList.smoothScrollToPosition(musicList.getCount()-1);
+            }
+        });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 Toast.makeText(MusicFragment.this.getActivity(),"搜索内容为"+query,Toast.LENGTH_SHORT);
+                searchInfo=query;
+                page=0;
                 musicList.setAdapter(null);
                 searchResults.clear();
-                getSong(query);
+                getSong(query,page);
                 return false;
             }
             @Override
@@ -92,9 +122,10 @@ public class MusicFragment extends Fragment {
                 return false;
             }
         });
+
         return rootView;
     }
-    public void getSong(String search)
+    public void getSong(String search,int page)
     {
         if (search.equals(""))
             return;
@@ -109,7 +140,7 @@ public class MusicFragment extends Fragment {
                 e.printStackTrace();
             }
         }
-        final String url=CLOUD_MUSIC_API+"keyword="+s+"&type=song&pageSize=20&page=0";
+        final String url=CLOUD_MUSIC_API+"keyword="+s+"&type=song&pageSize=20&"+"page="+page;
         System.out.println(url);
         Log.d(TAG,"url="+url);
         StringRequest stringRequest=new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -123,19 +154,7 @@ public class MusicFragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG,error.getMessage(),error);
-
                 Toast.makeText(MusicFragment.this.getActivity(), "请检查网络连接", Toast.LENGTH_SHORT).show();
-//                NetworkResponse response = error.networkResponse;
-//                if (error instanceof ServerError && response != null) {
-//                    try {
-//                        String res = new String(response.data, HttpHeaderParser.parseCharset(response.headers, "utf-8"));
-//                        JSONObject obj = new JSONObject(res);
-//                    } catch (UnsupportedEncodingException e1) {
-//                        e1.printStackTrace();
-//                    } catch (JSONException e2) {
-//                        e2.printStackTrace();
-//                    }
-//                }
             }
         });
         mQueue.add(stringRequest);
@@ -153,12 +172,15 @@ public class MusicFragment extends Fragment {
             {
                 JSONObject child=js.getJSONObject(i);
                 JSONArray artists=child.getJSONArray("ar");
-                String artist=artists.getJSONObject(0).getString("name");
-                String name=child.getString("name");
-                System.out.println(name);
+                JSONObject musicId=child.getJSONObject("privilege");
+                artist=artists.getJSONObject(0).getString("name");
+                name=child.getString("name");
+                String music_id=musicId.getString("id");
+                System.out.println(artist);
                 Map<String, String> item = new HashMap<String, String>();
                 item.put("name",name);
                 item.put("artist",artist);
+                item.put("music_id",music_id);
                 searchResults.add(item);
                 Log.d(TAG, "name = " + name + "---artists:" + artist);
             }
@@ -167,6 +189,27 @@ public class MusicFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        musicList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent stop_loc=new Intent();
+//                stop_loc.setClass(MusicFragment.this.getActivity(),PlayService.class);
+//                stop_loc.setAction("com.example.action.MUSIC_SERVICE");
+//                getActivity().stopService(stop_loc);
+                Map<String, String> map = searchResults.get(position-1);
+                String songname,playername;
+                songname=map.get("name");
+                playername=map.get("artist");
+                Intent stop_loc=new Intent();
+                stop_loc.setClass(MusicFragment.this.getActivity(),PlayService.class);
+                stop_loc.setAction("com.lzw.media.MUSIC_SERVICE");
+                getActivity().stopService(stop_loc);
+                Intent start_online=new Intent(MusicFragment.this.getActivity(), OnlinePlayActivity.class);
+                start_online.putExtra("name",songname);
+                start_online.putExtra("artist",playername);
+                getActivity().startActivity(start_online);
+            }
+        });
     }
 
     private BaseAdapter getAdapter()
@@ -195,7 +238,6 @@ public class MusicFragment extends Fragment {
                 line.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,100));
                 TextView songTitle=new TextView(MusicFragment.this.getActivity());
                 String musicname=map.get("name");
-            //    songTitle.setWidth(MainActivity.screenWidth/2);
                 songTitle.setHeight(100);
                 songTitle.setMaxLines(1);
                 songTitle.setTextColor(Color.MAGENTA);
@@ -203,10 +245,8 @@ public class MusicFragment extends Fragment {
                 songTitle.setText(musicname);
                 songTitle.setGravity(TextView.TEXT_ALIGNMENT_CENTER);
                 songTitle.setGravity(Gravity.CENTER_VERTICAL);
-
                 TextView artist=new TextView(MusicFragment.this.getActivity());
                 artist.setGravity(TextView.TEXT_ALIGNMENT_CENTER);
-              //  artist.setWidth(MainActivity.screenWidth/3);
                 artist.setHeight(100);
                 artist.setTextColor(Color.MAGENTA);
                 artist.setText(map.get("artist"));
@@ -214,13 +254,17 @@ public class MusicFragment extends Fragment {
                 artist.setMaxLines(1);
                 artist.setPadding(50, 0, 0, 10);
                 artist.setGravity(Gravity.RIGHT);
-
                 line.addView(songTitle);
                 line.addView(artist);
                 return line;
             }
         };
         return adapter;
+    }
+    private void onLoad()
+    {
+        musicList.stopRefresh();
+        musicList.stopLoadMore();
     }
     @Override
     public void onDestroy()

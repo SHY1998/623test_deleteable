@@ -11,10 +11,10 @@
         android:background="#f0f" >
     </SearchView>
 
-    <ListView
+    <com.example.xlistviewapi22.XListView
         android:id="@+id/netmusiclist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
-    </ListView>
+    </com.example.xlistviewapi22.XListView>
 
 </LinearLayout>

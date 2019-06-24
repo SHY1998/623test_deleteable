@@ -17,6 +17,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".PlayActivity"/>
+        <activity android:name=".OnlinePlayActivity"/>
+        <service android:name=".Service.NetPlayService"/>
         <service android:name=".Service.PlayService"/>
     </application>
 

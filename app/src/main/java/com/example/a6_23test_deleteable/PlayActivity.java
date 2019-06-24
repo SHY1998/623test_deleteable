@@ -43,8 +43,6 @@ public class PlayActivity extends Activity implements View.OnClickListener {
     public static final String MUSIC_CURRENT = "com.example.action.MUSIC_CURRENT";
     public static final String MUSIC_DURATION = "com.example.action.MUSIC_DURATION";
     public static final String MUSIC_PLAYING = "com.example.action.MUSIC_PLAYING";
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -80,7 +78,6 @@ public class PlayActivity extends Activity implements View.OnClickListener {
         pause.setOnClickListener(this);
         next.setOnClickListener(this);
         mResource= (Bitmap) MusicUtils.getArtwork(this,musicEntity.getId(),musicEntity.getAlbum_id(),true);
-      //  setViewContent(mResource);
         singer=findViewById(R.id.TV_singer);
         song.setText(musicEntity.getSong());
         singer.setText(musicEntity.getSinger());
@@ -95,12 +92,9 @@ public class PlayActivity extends Activity implements View.OnClickListener {
                     audioTrackChange(progress);
                 }
             }
-
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
 
@@ -136,7 +130,6 @@ public class PlayActivity extends Activity implements View.OnClickListener {
         intent.setAction("com.example.action.MUSIC_SERVICE");
         intent.setClass(this,PlayService.class);
         intent.putExtra("path",musicEntity.getPath());
-    //    System.out.println(mCurrentPosition);
         intent.putExtra("position",mCurrentPosition);
         intent.putExtra("MSG",AppConstantUtil.PlayerMsg.PLAY_MSG);
         startService(intent);
@@ -145,7 +138,6 @@ public class PlayActivity extends Activity implements View.OnClickListener {
     }
     public class PactivityReceiver extends BroadcastReceiver
     {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -181,7 +173,6 @@ public class PlayActivity extends Activity implements View.OnClickListener {
 
         }
     }
-
     @Override
     public void onClick(View v) {
         switch (v.getId())
@@ -227,9 +218,7 @@ public class PlayActivity extends Activity implements View.OnClickListener {
                     break;
             default:
                         break;
-//
         }
-
     }
 
     public void pause()
@@ -251,15 +240,15 @@ public class PlayActivity extends Activity implements View.OnClickListener {
         startService(intent);
         isPlaying=true;
         isPasue=false;
-
     }
     public void audioTrackChange( int progress)
     {
         Intent intent=new Intent();
         intent.setClass(this,PlayService.class);
         intent.setAction("com.example.action.MUSIC_SERVICE");
-        intent.putExtra("path",path);
+        intent.putExtra("path",musicEntity.getPath());
         intent.putExtra("MSG",AppConstantUtil.PlayerMsg.PROGRESS_CHANGE);
+        System.out.println("====================================="+mCurrentPosition);
         intent.putExtra("position",mCurrentPosition);
         intent.putExtra("progress",progress);
         System.out.println("时间"+progress);

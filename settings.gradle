@@ -1,1 +1,1 @@
-include ':app'
+include ':app', ':xlistviewlibrary', ':xlistviewlibrary2', ':xlistviewapi22', ':xlistviewapi22'
