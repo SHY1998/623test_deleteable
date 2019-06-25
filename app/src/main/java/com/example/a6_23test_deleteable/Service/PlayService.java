@@ -33,6 +33,16 @@ public class PlayService extends Service {
 
     private Handler handler = new Handler() {
         public void handleMessage(android.os.Message msg) {
+            if (msg.what == 0) {
+                if(mediaPlayer != null) {
+                    int currentTime = mediaPlayer.getCurrentPosition();
+                    Intent intent = new Intent();
+                    intent.setAction("MUSIC_CURRENT");
+                    intent.putExtra("currentTime", currentTime);
+                    sendBroadcast(intent);
+                    handler.sendEmptyMessageDelayed(0, 1000);
+                }
+            }
             if (msg.what == 1) {
                 if(mediaPlayer != null) {
                     currentTime = mediaPlayer.getCurrentPosition(); // 获取当前音乐播放的位置
@@ -97,14 +107,17 @@ public class PlayService extends Service {
             if (msg == AppConstantUtil.PlayerMsg.PLAY_MSG)
             {
                 play(0);
+                System.out.println("1");
             }
             else if(msg == AppConstantUtil.PlayerMsg.PAUSE_MSG)
             {
                 pause();
+                System.out.println("2");
             }
             else if(msg == AppConstantUtil.PlayerMsg.CONTINUE_MSG)
             {
                 resume();
+                System.out.println("3");
             }
             else if (msg == AppConstantUtil.PlayerMsg.PROGRESS_CHANGE)
             {
@@ -115,6 +128,7 @@ public class PlayService extends Service {
             else if(msg == AppConstantUtil.PlayerMsg.PLAYING_MSG)
             {
                 handler.sendEmptyMessage(1);
+                System.out.println("4");
             }
             super.onStart(intent,startId);
         }
@@ -142,10 +156,12 @@ public class PlayService extends Service {
 
     private void play(int currentTime) {
         try {
+            System.out.println("play运行");
             mediaPlayer.reset();
             mediaPlayer.setDataSource(path);
             mediaPlayer.prepare();
             mediaPlayer.setOnPreparedListener(new PreparedListener(currentTime));
+            handler.sendEmptyMessage(0);
             handler.sendEmptyMessage(1);
         } catch (Exception e) {
             e.printStackTrace();

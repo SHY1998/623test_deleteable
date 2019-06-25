@@ -312,7 +312,29 @@ public class MusicFragment extends Fragment {
             }
             else if (action.equals("ONLINE_FRONT"))
             {
-                System.out.println("点击next");
+                if (npositon--<0)
+                {
+                    Toast.makeText(getActivity(),"这已经是第一首了",Toast.LENGTH_SHORT);
+                }
+                else {
+                    npositon--;
+                    System.out.println("点击next");
+                    String songname, playername, id;
+                    playername = list.get(npositon).getMusic_singer();
+                    songname = list.get(npositon).getMusic_name();
+                    id = list.get(npositon).getMusic_id();
+                    System.out.println("当前" + list.get(npositon + 1).getMusic_id());
+                    System.out.println("下一个" + list.get(npositon + 2).getMusic_id());
+                    System.out.println("F获得id" + id);
+
+                    Intent intent1 = new Intent();
+                    intent1.setAction("MF_PLAY_NEXT");
+                    intent1.putExtra("name", songname);
+                    intent1.putExtra("artist", playername);
+                    intent1.putExtra("music_id", id);
+                    getActivity().sendBroadcast(intent1);
+                    System.out.println("Fagment发送信息");
+                }
             }
         }
     }

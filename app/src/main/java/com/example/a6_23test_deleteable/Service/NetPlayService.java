@@ -9,6 +9,7 @@ import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import com.example.a6_23test_deleteable.PlayActivity;
 import com.example.a6_23test_deleteable.Utils.AppConstantUtil;
 
 
@@ -17,6 +18,7 @@ public class NetPlayService extends Service implements MediaPlayer.OnBufferingUp
         MediaPlayer.OnPreparedListener {
     MediaPlayer mediaPlayer;
     private String uri;
+    private int currentTime;
     int id;
     private boolean isPlaying;
     private boolean isPause;
@@ -28,6 +30,7 @@ public class NetPlayService extends Service implements MediaPlayer.OnBufferingUp
             if (msg.what == 0) {
                 if(mediaPlayer != null) {
                     int currentTime = mediaPlayer.getCurrentPosition();
+                     System.out.println(currentTime);
                     Intent intent = new Intent();
                     intent.setAction("MUSIC_CURRENT");
                     intent.putExtra("currentTime", currentTime);
@@ -36,15 +39,13 @@ public class NetPlayService extends Service implements MediaPlayer.OnBufferingUp
                 }
             }
             if(msg.what==1){
-                int duration = mediaPlayer.getDuration();
-                if (duration > 0) {
+                if(mediaPlayer != null) {
+                    currentTime = mediaPlayer.getCurrentPosition(); // 获取当前音乐播放的位置
                     Intent intent = new Intent();
-                    intent.setAction("MUSIC_DURATION");
-                    int mCurrentPosition=0;
-                    intent.putExtra("pos", mCurrentPosition);
-                    Log.v("DUA", duration+"");
-                    intent.putExtra("duration", duration);
-                    sendBroadcast(intent);
+                    intent.setAction(PlayActivity.MUSIC_CURRENT);
+                    intent.putExtra("currentTime", currentTime);
+                    sendBroadcast(intent); // 给PlayerActivity发送广播
+                    handler.sendEmptyMessageDelayed(1, 1000);
                 }
             }
             if(msg.what==2){
@@ -147,7 +148,9 @@ public class NetPlayService extends Service implements MediaPlayer.OnBufferingUp
             uri="https://v1.itooi.cn/netease/url?id="+id+"&quality=flac";
             mediaPlayer.setDataSource(uri);
             mediaPlayer.prepareAsync();
+            System.out.println(id);
             mediaPlayer.setOnPreparedListener(this);
+            mediaPlayer.setOnPreparedListener(new PreparedListener(currentTime));
             handler.sendEmptyMessage(0);
             handler.sendEmptyMessage(1);
 
@@ -159,17 +162,20 @@ public class NetPlayService extends Service implements MediaPlayer.OnBufferingUp
     private void pause()
     {
         if (mediaPlayer != null && mediaPlayer.isPlaying())
-        {
+        {System.out.println("=============="+currentTime);
             mediaPlayer.pause();
             isPause=true;
+            System.out.println("=============="+isPause);
         }
     }
     private void resume()
     {
         if(isPause)
         {
+            System.out.println("resume=============="+isPause);
             mediaPlayer.start();
             isPause=false;
+            System.out.println("=============="+isPause);
         }
     }
     @Override
@@ -199,5 +205,28 @@ public class NetPlayService extends Service implements MediaPlayer.OnBufferingUp
     @Override
     public void onCompletion(MediaPlayer mp) {
         Log.e("mediaPlayer", "onCompletion");
+    }
+    private final class PreparedListener implements MediaPlayer.OnPreparedListener
+    {
+        private int currentTime;
+        public PreparedListener(int currentTime)
+        {
+            this.currentTime = currentTime;
+        }
+        @Override
+        public void onPrepared(MediaPlayer mp) {
+            mediaPlayer.start();
+            if (currentTime>0)
+            {
+                System.out.println("时间"+currentTime);
+                mediaPlayer.seekTo(currentTime);
+            }
+//            Intent intent=new Intent();
+//            intent.setAction(MUSIC_DURATION);
+//            songLength=mediaPlayer.getDuration();
+//            intent.putExtra("songLength",songLength);
+//            sendBroadcast(intent);
+
+        }
     }
 }
