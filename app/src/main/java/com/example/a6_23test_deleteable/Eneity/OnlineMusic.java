@@ -8,6 +8,7 @@ public class OnlineMusic implements Serializable {
     private String music_url;
     private String music_singer;
     private String music_length;
+    private String music_name;
 
     public String getMusic_id() {
         return music_id;
@@ -47,5 +48,13 @@ public class OnlineMusic implements Serializable {
 
     public void setMusic_length(String music_length) {
         this.music_length = music_length;
+    }
+
+    public String getMusic_name() {
+        return music_name;
+    }
+
+    public void setMusic_name(String music_name) {
+        this.music_name = music_name;
     }
 }

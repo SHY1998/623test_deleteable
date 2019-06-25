@@ -1,6 +1,9 @@
 package com.example.a6_23test_deleteable.Service;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -19,6 +22,7 @@ public class NetPlayService extends Service implements MediaPlayer.OnBufferingUp
     private boolean isPause;
     private int msg;
     private int percent;
+    private MyReceiver myReceiver;
     private Handler handler = new Handler() {
         public void handleMessage(android.os.Message msg) {
             if (msg.what == 0) {
@@ -58,8 +62,15 @@ public class NetPlayService extends Service implements MediaPlayer.OnBufferingUp
 
     @Override
     public void onCreate() {
+
         System.out.println("serviceCreate");
         super.onCreate();
+        System.out.println("serviece建立receiver之前");
+        myReceiver=new MyReceiver();
+        IntentFilter filter= new IntentFilter();
+        filter.addAction("MF_PLAY_NEXT");
+        filter.addAction("ONLINE_ACTIVITY_NEXT");
+        registerReceiver(myReceiver, filter);
         try {
             mediaPlayer=new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -68,10 +79,13 @@ public class NetPlayService extends Service implements MediaPlayer.OnBufferingUp
         } catch (Exception  e) {
             e.printStackTrace();
         }
+
+
     }
     @Override
     public void onStart(Intent intent,int flags)
     {
+
         System.out.println("serviceStart");
         if(intent==null)
         {
@@ -99,8 +113,29 @@ public class NetPlayService extends Service implements MediaPlayer.OnBufferingUp
         {
             resume();
         }
+        else if(msg==AppConstantUtil.PlayerMsg.NEXT_MSG);
+        {
+            System.out.println("======="+id);
+//      int id= Integer.parseInt(intent.getStringExtra("id"));
+            System.out.println("接收id"+id);
+           play(id);
+        }
         super.onStart(intent,flags);
 
+    }
+
+    public class MyReceiver extends BroadcastReceiver
+    {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals("MF_PLAY_NEXT"))
+            {
+                int id= Integer.parseInt(intent.getStringExtra("music_id"));
+                System.out.println("service获取的id"+id);
+            //    play(id);
+            }
+        }
     }
     private void play(int id)
     {

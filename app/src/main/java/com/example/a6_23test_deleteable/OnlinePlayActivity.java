@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -28,6 +29,7 @@ public class OnlinePlayActivity extends Activity implements View.OnClickListener
     public static final String MUSIC_DURATION = "action.ONLINE_MUSIC_DURATION";
     public static final String MUSIC_PERCENT="action.ONLINE_MUSIC_PERCENT";
     private PlayerReceiver playerReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +67,12 @@ public class OnlinePlayActivity extends Activity implements View.OnClickListener
         online_TV_songName.setText(name);
         online_TV_singer.setText(artist);
 
+        playerReceiver=new PlayerReceiver();
+        IntentFilter filter=new IntentFilter();
+        filter.addAction("MF_PLAY_NEXT");
+        filter.addAction("MF_PLAY_FRONT");
+        registerReceiver(playerReceiver,filter);
+
         if(flag)
         {
             play();
@@ -75,7 +83,7 @@ public class OnlinePlayActivity extends Activity implements View.OnClickListener
         {
             Intent intent1=new Intent(this, NetPlayService.class);
             intent1.putExtra("MSG", AppConstantUtil.PlayerMsg.PLAY_MSG);
-            System.out.println(id);
+            System.out.println(nId);
             intent1.putExtra("id",nId);
             startService(intent1);
             System.out.println("启动intent1");
@@ -105,6 +113,17 @@ public class OnlinePlayActivity extends Activity implements View.OnClickListener
                     play();
                 }
                 break;
+            case R.id.Online_IB_next:
+                Intent intent=new Intent();
+                intent.setAction("ONLINE_NEXT");
+                sendBroadcast(intent);
+                System.out.println("发送next信息");
+               // play();
+                break;
+            case R.id.Online_IB_front:
+                Intent intent1=new Intent();
+                intent1.setAction("ONLINE_FRONT");
+                sendBroadcast(intent1);
         }
 
     }
@@ -114,6 +133,18 @@ public class OnlinePlayActivity extends Activity implements View.OnClickListener
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals("MF_PLAY_NEXT"))
+            {
+                int id= Integer.parseInt(intent.getStringExtra("music_id"));
+                next(id);
+            }
+            else if (action.equals("MF_PLAY_FRONT"))
+            {
+                int id= Integer.parseInt(intent.getStringExtra("music_id"));
+                next(id);
+            }
+
         }
     }
     private void pause()
@@ -149,10 +180,21 @@ public class OnlinePlayActivity extends Activity implements View.OnClickListener
         isPlaying=true;
         isPasue=false;
     }
+    private void next( int id)
+    {
+        Intent intent=new Intent();
+        intent.setAction("com.example.action.MUSIC_SERVICE");
+        intent.setClass(this,NetPlayService.class);
+        System.out.println("不为空"+id);
+        intent.putExtra("MSG",AppConstantUtil.PlayerMsg.NEXT_MSG);
+        intent.putExtra("id",id);
+        startService(intent);
+    }
     @Override
     public void onDestroy()
     {
         //unregisterReceiver(pactivityReceiver);
         super.onDestroy();
     }
+
 }

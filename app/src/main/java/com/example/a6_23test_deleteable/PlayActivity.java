@@ -251,7 +251,6 @@ public class PlayActivity extends Activity implements View.OnClickListener {
         intent.setAction("com.example.action.MUSIC_SERVICE");
         intent.putExtra("path",musicEntity.getPath());
         intent.putExtra("MSG",AppConstantUtil.PlayerMsg.PROGRESS_CHANGE);
-        System.out.println("====================================="+mCurrentPosition);
         intent.putExtra("position",mCurrentPosition);
         intent.putExtra("progress",progress);
         System.out.println("时间"+progress);

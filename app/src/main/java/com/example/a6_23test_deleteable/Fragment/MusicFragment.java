@@ -1,7 +1,10 @@
 package com.example.a6_23test_deleteable.Fragment;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,6 +29,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.a6_23test_deleteable.Eneity.OnlineMusic;
 import com.example.a6_23test_deleteable.OnlinePlayActivity;
 import com.example.a6_23test_deleteable.PlayActivity;
 import com.example.a6_23test_deleteable.R;
@@ -50,12 +54,15 @@ public class MusicFragment extends Fragment {
     private static final String TAG = "MainActivity";
     public static  String getResponse;
     public static JSONObject jo;
+    public static int npositon=-1;
     String artist;
     String name;
     String music_id;
+    List<OnlineMusic> list=new ArrayList<>();
     public static List<Map<String, String>> searchResults = new ArrayList<Map<String, String>>();
     private static int screenWidth;
     private SearchView searchView;
+    private OLPActivityReceiver olpActivityReceiver;
     XListView musicList;
     public static String searchInfo;
     Handler handler;
@@ -78,6 +85,13 @@ public class MusicFragment extends Fragment {
         musicList=rootView.findViewById(R.id.netmusiclist);
         musicList.setPullLoadEnable(true);
         musicList.setPullRefreshEnable(true);
+        olpActivityReceiver=new OLPActivityReceiver();
+        IntentFilter filter= new IntentFilter();
+        filter.addAction("ONLINE_NEXT");
+        filter.addAction("ONLINE_FRONT");
+        getActivity().getApplicationContext().registerReceiver(olpActivityReceiver, filter);
+
+
         mQueue= Volley.newRequestQueue(MusicFragment.this.getActivity());
         handler=new Handler()
         {
@@ -104,9 +118,6 @@ public class MusicFragment extends Fragment {
             public void onLoadMore() {
                 page++;
                 getSong(searchInfo,page);
-//                musicList.smoothScrollToPosition(musicList.getCount() - 1);
-//                System.out.println("========================================"+musicList.getCount());
-//                musicList.scr
             }
         });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -116,7 +127,7 @@ public class MusicFragment extends Fragment {
                 searchInfo=query;
                 page=0;
                 musicList.setAdapter(null);
-                searchResults.clear();
+                list.clear();
                 getSong(query,page);
                 return false;
             }
@@ -143,7 +154,6 @@ public class MusicFragment extends Fragment {
             }
         }
         final String url=CLOUD_MUSIC_API+"keyword="+s+"&type=song&pageSize=20&"+"page="+page;
-        System.out.println(url);
         Log.d(TAG,"url="+url);
         StringRequest stringRequest=new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
 
@@ -175,19 +185,17 @@ public class MusicFragment extends Fragment {
             JSONArray js=new JSONObject(result).getJSONArray("songs");
             for(int i=0;i<js.length();i++)
             {
-                System.out.println(js.length());
                 JSONObject child=js.getJSONObject(i);
                 JSONArray artists=child.getJSONArray("ar");
                 JSONObject musicId=child.getJSONObject("privilege");
                 artist=artists.getJSONObject(0).getString("name");
                 name=child.getString("name");
                 music_id=musicId.getString("id");
-                System.out.println(artist);
-                Map<String, String> item = new HashMap<String, String>();
-                item.put("name",name);
-                item.put("artist",artist);
-                item.put("music_id",music_id);
-                searchResults.add(item);
+                OnlineMusic onlineMusic=new OnlineMusic();
+                onlineMusic.setMusic_name(name);
+                onlineMusic.setMusic_singer(artist);
+                onlineMusic.setMusic_id(music_id);
+                list.add(onlineMusic);
                 Log.d(TAG, "name = " + name + "---artists:" + artist);
             }
             handler.sendEmptyMessage(0);
@@ -197,10 +205,12 @@ public class MusicFragment extends Fragment {
         musicList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Map<String, String> map = searchResults.get(position-1);
+                npositon=position-1;
+                OnlineMusic result=list.get(position-1);
                 String songname,playername;
-                songname=map.get("name");
-                playername=map.get("artist");
+                songname=result.getMusic_name();
+                playername=result.getMusic_singer();
+                music_id=result.getMusic_id();
                 Intent stop_loc=new Intent();
                 stop_loc.setClass(MusicFragment.this.getActivity(),PlayService.class);
                 stop_loc.setAction("com.lzw.media.MUSIC_SERVICE");
@@ -219,7 +229,7 @@ public class MusicFragment extends Fragment {
         BaseAdapter adapter=new BaseAdapter() {
             @Override
             public int getCount() {
-                return searchResults.size();
+                return list.size();
             }
 
             @Override
@@ -234,12 +244,12 @@ public class MusicFragment extends Fragment {
 
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
-                Map<String, String> map = searchResults.get(position);
+//                Map<String, String> map = searchResults.get(position);
                 LinearLayout line=new LinearLayout(MusicFragment.this.getActivity());
                 line.setOrientation(LinearLayout.HORIZONTAL);
                 line.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,100));
                 TextView songTitle=new TextView(MusicFragment.this.getActivity());
-                String musicname=map.get("name");
+                String musicname=list.get(position).getMusic_name();
                 songTitle.setHeight(100);
                 songTitle.setMaxLines(1);
                 songTitle.setTextColor(Color.MAGENTA);
@@ -251,7 +261,7 @@ public class MusicFragment extends Fragment {
                 artist.setGravity(TextView.TEXT_ALIGNMENT_CENTER);
                 artist.setHeight(100);
                 artist.setTextColor(Color.MAGENTA);
-                artist.setText(map.get("artist"));
+                artist.setText(list.get(position).getMusic_singer());
                 artist.setTextSize(15);
                 artist.setMaxLines(1);
                 artist.setPadding(50, 0, 0, 10);
@@ -272,5 +282,38 @@ public class MusicFragment extends Fragment {
     public void onDestroy()
     {
         super.onDestroy();
+    }
+    public class OLPActivityReceiver extends BroadcastReceiver
+    {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            System.out.println("action为"+action);
+            if (action.equals("ONLINE_NEXT"))
+            {
+                npositon++;
+                System.out.println("点击next");
+                String songname,playername,id;
+                playername=list.get(npositon).getMusic_singer();
+                songname=list.get(npositon).getMusic_name();
+                id=list.get(npositon).getMusic_id();
+                System.out.println("当前"+list.get(npositon+1).getMusic_id());
+                System.out.println("下一个"+list.get(npositon+2).getMusic_id());
+                System.out.println("F获得id"+id);
+
+                Intent intent1=new Intent();
+                intent1.setAction("MF_PLAY_NEXT");
+                intent1.putExtra("name",songname);
+                intent1.putExtra("artist",playername);
+                intent1.putExtra("music_id",id);
+                getActivity().sendBroadcast(intent1);
+                System.out.println("Fagment发送信息");
+            }
+            else if (action.equals("ONLINE_FRONT"))
+            {
+                System.out.println("点击next");
+            }
+        }
     }
 }

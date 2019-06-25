@@ -55,9 +55,9 @@ public class PlayService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d("service","service created");
-//
         mediaPlayer=new MediaPlayer();
         music= MusicUtils.getMusicData(PlayService.this);
+
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
