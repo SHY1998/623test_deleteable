@@ -8,13 +8,11 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.SeekBar;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.example.a6_23test_deleteable.Eneity.Music;
 import com.example.a6_23test_deleteable.Service.PlayService;
 import com.example.a6_23test_deleteable.Utils.AppConstantUtil;
+import com.example.a6_23test_deleteable.Utils.GaussianBlurUtil;
 import com.example.a6_23test_deleteable.Utils.MusicUtils;
 import java.util.List;
 
@@ -36,6 +34,8 @@ public class PlayActivity extends Activity implements View.OnClickListener {
     private int currentTime;
     private String path;
     private Bitmap mResource;
+    private ImageView mAvatar;
+    private LinearLayout mBackground;
     private TextView currentProcess,finalProgress,nameText,singerText;
     private PactivityReceiver pactivityReceiver;
     public static final String UPDATE_ACTION="com.example.action.UPDATE_ACTION";
@@ -68,12 +68,15 @@ public class PlayActivity extends Activity implements View.OnClickListener {
         pause=findViewById(R.id.IB_pause);
         front=findViewById(R.id.IB_front);
         next=findViewById(R.id.IB_next);
-
+        mAvatar=findViewById(R.id.IV_picture);
         music_process=findViewById(R.id.SB_length);
         nameText=findViewById(R.id.TV_songName);
         singerText=findViewById(R.id.TV_singer);
         song=findViewById(R.id.TV_songName);
+        mBackground=findViewById(R.id.FP_BG);
 
+        mResource=MusicUtils.getArtwork(this,musicEntity.getId(),musicEntity.getAlbum_id(),true);
+        setViewContent(mResource);
         currentProcess=findViewById(R.id.current_progress);
         finalProgress=findViewById(R.id.final_progress);
         front.setOnClickListener(this);
@@ -165,6 +168,8 @@ public class PlayActivity extends Activity implements View.OnClickListener {
                 {
                     song.setText(musicEntity.getSong());
                     singer.setText(musicEntity.getSinger());
+                    mResource = MusicUtils.getArtwork(PlayActivity.this, musicEntity.getId(), musicEntity.getAlbum_id(),true);
+                    setViewContent(mResource);
                 }
                 if (mCurrentPosition==0)
                 {
@@ -202,7 +207,10 @@ public class PlayActivity extends Activity implements View.OnClickListener {
                     song.setText(musicEntity.getSong());
                     singerText.setText(musicEntity.getSinger());
                     music_process.setProgress(0);
+                    mResource = MusicUtils.getArtwork(this, musicEntity.getId(), musicEntity.getAlbum_id(), true);
+                    previous(mResource);
                     play();
+
                 }
                 else
                 {
@@ -262,19 +270,42 @@ public class PlayActivity extends Activity implements View.OnClickListener {
         unregisterReceiver(pactivityReceiver);
         super.onDestroy();
     }
-//    public void setViewContent(Bitmap bitmap)
-//    {
-//        setBackgroundBitmap(bitmap);
-//        setAvatarBitmap(bitmap);
-//    }
+    public void setViewContent(Bitmap bitmap)
+    {
+        setBackgroundBitmap(bitmap);
+        setAvatarBitmap(bitmap);
+    }
+
+    private void setAvatarBitmap(Bitmap bitmap) {
+        mAvatar.setImageBitmap(bitmap);
+    }
 //
-//    private void setAvatarBitmap(Bitmap bitmap) {
-//        mAvatar.setImageBitmap(bitmap);
-//    }
-//
-//    private void setBackgroundBitmap(Bitmap bitmap) {
-//        mBackground.setBackgroundDrawable(GaussianBlurUtil.BoxBlurFilter(bitmap));
-//
-//    }
+    private void setBackgroundBitmap(Bitmap bitmap) {
+        mBackground.setBackgroundDrawable(GaussianBlurUtil.BoxBlurFilter(bitmap));
+
+    }
+    public void previous(Bitmap bitmap){
+
+        //pause();
+        changeImage(bitmap);
+        play();
+    }
+    private void changeImage(final Bitmap bitmap){
+        mAvatar.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setAvatarBitmap(bitmap);
+                System.out.println("图片"+bitmap);
+            }
+        }, 100);
+        mBackground.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+                setBackgroundBitmap(bitmap);
+            }
+        }, 100);
+    }
+
 
 }

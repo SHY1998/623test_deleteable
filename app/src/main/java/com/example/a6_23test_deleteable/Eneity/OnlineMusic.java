@@ -9,6 +9,7 @@ public class OnlineMusic implements Serializable {
     private String music_singer;
     private String music_length;
     private String music_name;
+    private String pic_url;
 
     public String getMusic_id() {
         return music_id;

@@ -8,8 +8,12 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.bumptech.glide.Glide;
 
+import com.example.a6_23test_deleteable.Eneity.OnlineMusic;
 import com.example.a6_23test_deleteable.Service.NetPlayService;
 import com.example.a6_23test_deleteable.Service.PlayService;
 import com.example.a6_23test_deleteable.Utils.AppConstantUtil;
@@ -23,6 +27,9 @@ public class OnlinePlayActivity extends Activity implements View.OnClickListener
     private boolean flag;
     TextView online_TV_songName,online_TV_singer;
     private ImageButton front,pause,next;
+    private LinearLayout mBackground;
+    private ImageView mAvatar;
+    private OnlineMusic onlineMusic;
     public static final String UPDATE_ACTION = "action.ONLINE_UPDATE_ACTION";
     public static final String CTL_ACTION = "action.ONLINE_CTL_ACTION";
     public static final String MUSIC_CURRENT = "action.ONLINE_MUSIC_CURRENT";
@@ -36,7 +43,10 @@ public class OnlinePlayActivity extends Activity implements View.OnClickListener
         setContentView(R.layout.online_play_layout);
         Intent intent=getIntent();
         int  id= Integer.parseInt(intent.getStringExtra("music_id"));
+        name=intent.getStringExtra("name");
+        artist=intent.getStringExtra("artist");
         String stringId=intent.getStringExtra("music_id");
+        onlineMusic= (OnlineMusic) intent.getSerializableExtra("netmusicitem");
         System.out.println("OPA"+id);
         if (id!=nId)
         {
@@ -61,6 +71,8 @@ public class OnlinePlayActivity extends Activity implements View.OnClickListener
         pause.setOnClickListener(this);
         next.setOnClickListener(this);
 
+        mBackground=findViewById(R.id.OP_BG);
+        mAvatar=findViewById(R.id.Online_IV_picture);
         name=intent.getStringExtra("name");
         artist=intent.getStringExtra("artist");
 
@@ -90,6 +102,7 @@ public class OnlinePlayActivity extends Activity implements View.OnClickListener
             isPlaying=true;
             isPlaying=false;
         }
+      //  Glide.with(this).load(onlineMusic.getMusic_url()).into(mAvatar);
 
 
 
@@ -169,6 +182,8 @@ public class OnlinePlayActivity extends Activity implements View.OnClickListener
     }
     private void play()
     {
+        online_TV_songName.setText(name);
+        online_TV_singer.setText(artist);
         Intent intent=new Intent();
         intent.setAction("com.example.action.MUSIC_SERVICE");
         intent.setClass(this,NetPlayService.class);

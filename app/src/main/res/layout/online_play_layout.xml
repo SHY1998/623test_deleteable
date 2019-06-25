@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+     android:id="@+id/OP_BG"
+android:background="@drawable/default_album">
     <TextView
         android:gravity="center"
         android:text="青花瓷"
@@ -16,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <ImageView
-        android:background="@mipmap/image1"
+        android:background="@drawable/default_album"
         android:id="@+id/Online_IV_picture"
         android:layout_width="match_parent"
         android:layout_height="400dp" />
@@ -50,23 +52,26 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <ImageButton
-            android:background="@mipmap/ic_launcher"
+                android:layout_weight="1"
+            android:background="@drawable/ic_last"
             android:id="@+id/Online_IB_front"
             android:layout_gravity="left"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent" />
 
         <ImageButton
+                android:layout_weight="1"
             android:id="@+id/Online_IB_pause"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
-            android:background="@mipmap/ic_launcher" />
+            android:background="@drawable/ic_pause" />
 
         <ImageButton
+                android:layout_weight="1"
             android:id="@+id/Online_IB_next"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:background="@mipmap/ic_launcher" />
+            android:background="@drawable/ic_next" />
     </LinearLayout>
 </LinearLayout>

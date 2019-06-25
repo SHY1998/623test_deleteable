@@ -219,6 +219,7 @@ public class MusicFragment extends Fragment {
                 start_online.putExtra("name",songname);
                 start_online.putExtra("artist",playername);
                 start_online.putExtra("music_id",music_id);
+//                start_online.putExtra("netmusicitem",list.get(position-1));
                 getActivity().startActivity(start_online);
             }
         });
@@ -250,6 +251,7 @@ public class MusicFragment extends Fragment {
                 line.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,100));
                 TextView songTitle=new TextView(MusicFragment.this.getActivity());
                 String musicname=list.get(position).getMusic_name();
+
                 songTitle.setHeight(100);
                 songTitle.setMaxLines(1);
                 songTitle.setTextColor(Color.MAGENTA);

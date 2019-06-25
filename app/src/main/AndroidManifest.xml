@@ -16,6 +16,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Welcome"/>
         <activity android:name=".PlayActivity"/>
         <activity android:name=".OnlinePlayActivity"/>
         <service android:name=".Service.NetPlayService"/>
